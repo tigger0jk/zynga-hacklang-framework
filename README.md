@@ -1,6 +1,6 @@
 # zynga-hacklang-framework
 
-This is a collection of libraries that the Zynga uses to enable hacklang strict usage.
+This is a collection of libraries that Zynga uses to enable hacklang strict usage.
 
 # What is provided:
 
@@ -127,6 +127,16 @@ sudo mkdir -p /opt/zynga
 # create the environment indicator
 sudo touch /opt/zynga/is_development
 ```
+
+# Modifying code
+
+## Adding new namespaces
+In order for a new namespace to properly resolve to the correct file path, you have to provide the autoloader with a mapping from the namespace to the file path. To do this, you will need to:
+1) Modify ./composer.json in the autoload/psr-4 section to contain your mapping from namespace to file path. These should be organized in alphabetical order.
+2) Commit this change.
+3) Run make composer-update.
+4) Verify that your mapping appears in ./vendor/composer/autoload_psr4.php
+5) Verify that your namespace is recognized and a class in said namespace can be loaded AT RUNTIME. Running hh_client isn't sufficient as the typechecker uses a different means of verifying classes/namespaces.
 
 # Submitting code
 1) Run make test
