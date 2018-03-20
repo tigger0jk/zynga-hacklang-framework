@@ -31,53 +31,63 @@ abstract class Base<Tv> implements ExportInterface {
     ?string $parentFieldName = null,
     bool $sorted = false,
   ): string {
-    $stack = '';
+    try {
 
-    if ($parentFieldName !== null) {
-      $stack .= json_encode($parentFieldName).':';
-    }
+      $stack = '';
 
-    // --
-    // We serialize the individual items off into a json array, no need to make
-    // a temporary array and then run json encode on it as the vector / array
-    // type is so simplistic and the child storable objects will handle the
-    // heavy lifting of serialization.
-    // --
-
-    $stack .= '[';
-
-    $firstItem = true;
-
-    $items = $this->collection->items();
-
-    foreach ($items as $storableItem) {
-
-      // We can skip the value if the item is still in default state.
-      list($isRequired, $isDefaultValue) =
-        FieldsGeneric::getIsRequiredAndIsDefaultValue($storableItem);
-
-      if ($isDefaultValue === true) {
-        continue;
+      if ($parentFieldName !== null) {
+        $stack .= json_encode($parentFieldName).':';
       }
 
-      $value = null;
-      if ($storableItem instanceof StorableObjectInterface) {
-        $value = $storableItem->export()->asJSON(null, $sorted);
-      } else if ($storableItem instanceof TypeInterface) {
-        $value = json_encode($storableItem->get());
-      }
+      // --
+      // We serialize the individual items off into a json array, no need to make
+      // a temporary array and then run json encode on it as the vector / array
+      // type is so simplistic and the child storable objects will handle the
+      // heavy lifting of serialization.
+      // --
 
-      if ($value !== null) {
-        if ($firstItem === false) {
-          $stack .= ',';
+      $stack .= '[';
+
+      $firstItem = true;
+
+      $items = $this->collection->items();
+
+      foreach ($items as $storableItem) {
+
+        // We can skip the value if the item is still in default state.
+        list($isRequired, $isDefaultValue) =
+          FieldsGeneric::getIsRequiredAndIsDefaultValue($storableItem);
+
+        if ($isDefaultValue === true) {
+          continue;
         }
-        $stack .= $value;
-        $firstItem = false;
-      }
-    }
 
-    $stack .= ']';
-    return $stack;
+        $value = null;
+        if ($storableItem instanceof StorableObjectInterface) {
+          try {
+            $value = $storableItem->export()->asJSON(null, $sorted);
+          } catch (Exception $e) {
+            throw $e;
+          }
+        } else if ($storableItem instanceof TypeInterface) {
+          $value = json_encode($storableItem->get());
+        }
+
+        if ($value !== null) {
+          if ($firstItem === false) {
+            $stack .= ',';
+          }
+          $stack .= $value;
+          $firstItem = false;
+        }
+      }
+
+      $stack .= ']';
+      return $stack;
+
+    } catch (Exception $e) {
+      throw $e;
+    }
   }
 
   /**
@@ -86,36 +96,46 @@ abstract class Base<Tv> implements ExportInterface {
    * The same way the base Map class does when importing an array
    */
   public function asMap(): Map<string, mixed> {
-    $map = Map {};
+    try {
 
-    $fieldNum = 0;
-    $items = $this->collection->items();
+      $map = Map {};
 
-    foreach ($items as $storableItem) {
-      $fieldName = "".$fieldNum;
+      $fieldNum = 0;
+      $items = $this->collection->items();
 
-      // We can skip the value if the item is still in default state.
-      list($isRequired, $isDefaultValue) =
-        FieldsGeneric::getIsRequiredAndIsDefaultValue($storableItem);
+      foreach ($items as $storableItem) {
+        $fieldName = "" . $fieldNum;
 
-      if ($isDefaultValue === true) {
-        continue;
+        // We can skip the value if the item is still in default state.
+        list($isRequired, $isDefaultValue) =
+          FieldsGeneric::getIsRequiredAndIsDefaultValue($storableItem);
+
+        if ($isDefaultValue === true) {
+          continue;
+        }
+
+        $value = null;
+        if ($storableItem instanceof StorableObjectInterface) {
+          try {
+            $value = $storableItem->export()->asMap();
+          } catch (Exception $e) {
+            throw $e;
+          }
+        } else if ($storableItem instanceof TypeInterface) {
+          $value = $storableItem->get();
+        }
+
+        if ($value !== null) {
+          $map->set($fieldName, $value);
+          $fieldNum++;
+        }
       }
 
-      $value = null;
-      if ($storableItem instanceof StorableObjectInterface) {
-        $value = $storableItem->export()->asMap();
-      } else if ($storableItem instanceof TypeInterface) {
-        $value = $storableItem->get();
-      }
+      return $map;
 
-      if ($value !== null) {
-        $map->set($fieldName, $value);
-        $fieldNum++;
-      }
+    } catch (Exception $e) {
+      throw $e;
     }
-
-    return $map;
   }
 
   public function asBinary(): string {
