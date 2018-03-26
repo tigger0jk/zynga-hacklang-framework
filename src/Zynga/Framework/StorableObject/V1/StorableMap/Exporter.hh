@@ -31,7 +31,7 @@ class Exporter<Tv> implements ExportInterface {
     try {
       $map = $this->_object->getMap();
       if ($map->keys()->count() == 0) {
-        throw new NoFieldsFoundException('class='.get_class($this->_object));
+        // throw new NoFieldsFoundException('class='.get_class($this->_object));
       }
 
       $payload = '';

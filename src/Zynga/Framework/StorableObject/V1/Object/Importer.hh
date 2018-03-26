@@ -34,7 +34,7 @@ class Importer implements ImportInterface {
       $fields = $this->_object->fields()->getForObject();
 
       if ($fields->count() == 0) {
-        throw new NoFieldsFoundException('class='.get_class($this->_object));
+        // throw new NoFieldsFoundException('class='.get_class($this->_object));
       }
 
       $fieldCount = $fields->count();
@@ -80,7 +80,7 @@ class Importer implements ImportInterface {
       $fields = $this->_object->fields()->getForObject();
 
       if ($fields->count() == 0) {
-        throw new NoFieldsFoundException('class='.get_class($this->_object));
+        // throw new NoFieldsFoundException('class='.get_class($this->_object));
       }
 
       foreach ($fields as $fieldName => $field) {

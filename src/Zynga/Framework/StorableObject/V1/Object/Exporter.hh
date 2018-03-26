@@ -123,7 +123,7 @@ class Exporter implements ExportInterface {
     $fields = $this->_object->fields()->getForObject();
 
     if ($fields->count() == 0) {
-      throw new NoFieldsFoundException('class='.get_class($this->_object));
+      // throw new NoFieldsFoundException('class='.get_class($this->_object));
     }
 
     $payload = Map {};

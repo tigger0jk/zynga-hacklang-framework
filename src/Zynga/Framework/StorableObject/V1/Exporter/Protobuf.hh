@@ -33,7 +33,7 @@ class Protobuf {
       $fields = $object->fields()->getForObject();
 
       if ($fields->count() == 0) {
-        throw new NoFieldsFoundException('class='.get_class($object));
+        // throw new NoFieldsFoundException('class='.get_class($object));
       }
 
       $fieldAndTypes = $object->fields()->getFieldsAndTypesForObject();
